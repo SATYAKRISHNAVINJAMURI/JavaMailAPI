@@ -1,0 +1,2 @@
+# JavaMailAPI
+Exploring JavaMailAPI
