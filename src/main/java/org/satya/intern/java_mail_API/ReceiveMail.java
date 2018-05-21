@@ -1,60 +1,48 @@
 package org.satya.intern.java_mail_API;
 
-import java.io.IOException;  
 import java.util.Properties;  
 import javax.mail.Folder;  
 import javax.mail.Message;  
-import javax.mail.MessagingException;  
-import javax.mail.NoSuchProviderException;  
-import javax.mail.Session;  
-import com.sun.mail.pop3.POP3Store;  
+import javax.mail.Session;
+import javax.mail.Store;  
   
 public class ReceiveMail{  
-  
-	public static void receiveEmail(String pop3Host, String storeType, String user, String password){  
-		try {  
-			//1) get the session object  
-			Properties properties = new Properties();  
-			properties.put("mail.pop3.host", pop3Host);  
-			Session emailSession = Session.getDefaultInstance(properties);  
-     
-			//2) create the POP3 store object and connect with the pop server  
-			POP3Store emailStore = (POP3Store) emailSession.getStore(storeType);  
-			emailStore.connect(user, password);  
-  
-			//3) create the folder object and open it  
-			Folder emailFolder = emailStore.getFolder("INBOX");  
-			emailFolder.open(Folder.READ_ONLY);  
-			
-			//4) retrieve the messages from the folder in an array and print it  
-			Message[] messages = emailFolder.getMessages();  
-			for (int i = 0; i < messages.length; i++) {  
-				Message message = messages[i];  
-				System.out.println("---------------------------------");  
-				System.out.println("Email Number " + (i + 1));  
-				System.out.println("Subject: " + message.getSubject());  
-				System.out.println("From: " + message.getFrom()[0]);  
-				System.out.println("Text: " + message.getContent().toString());  
-			}  
-  
-			//5) close the store and folder objects  
-			emailFolder.close(false);  
-			emailStore.close();  
-			
-		}	
-		catch (NoSuchProviderException e) {e.printStackTrace();}   
-		catch (MessagingException e) {e.printStackTrace();}  
-		catch (IOException e) {e.printStackTrace();}  
-	}  
-  
-	public static void main(String[] args) {  
-  
-		String host = "mail.javatpoint.com";//change accordingly  
-		String mailStoreType = "pop3";  
-		String username= "sonoojaiswal@javatpoint.com";  
-		String password= "xxxxx";//change accordingly  
-		
-		receiveEmail(host, mailStoreType, username, password);  
-  
-	}  
+    public static void main(String[] args) {
+    	 
+        ReceiveMail gmail = new ReceiveMail();
+        gmail.read();
+ 
+    }
+ 
+    public void read() {
+ 
+        Properties props = new Properties();
+ 
+        try {
+            props.load(new ReceiveMail().getClass().getClassLoader().getResourceAsStream("config.properties"));
+            Session session = Session.getDefaultInstance(props, null);
+ 
+            Store store = session.getStore("imaps");
+            store.connect(props.getProperty("GMAIL_SMTP_SERVER"), props.getProperty("USER_NAME"), props.getProperty("PASSWORD"));
+ 
+            Folder inbox = store.getFolder("inbox");
+            inbox.open(Folder.READ_ONLY);
+            int messageCount = inbox.getMessageCount();
+ 
+            System.out.println("Total Messages:- " + messageCount);
+ 
+            Message[] messages = inbox.getMessages();
+            System.out.println("------------------------------");
+            
+            for (int i = messages.length - 1; i > messages.length - 10; i--) { // Prints first 10 messages.
+                System.out.println("Mail Subject:- " + messages[i].getSubject());
+            }
+ 
+            inbox.close(true);
+            store.close();
+ 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    } 
 } 

@@ -1,26 +1,24 @@
 package org.satya.intern.java_mail_API;
 
+import java.io.IOException;
 import java.util.*;  
 import javax.mail.*;  
 import javax.mail.internet.*;  
-import javax.activation.*;  
   
 public class SendEmail{  
-	public static void main(String [] args){  
-		String to = "sonoojaiswal1988@gmail.com";//change accordingly  
-		String from = "sonoojaiswal1987@gmail.com";//change accordingly  
-		String host = "localhost";//or IP address  
-		
+	public static void main(String [] args) throws IOException{  
+		Properties prop = new Properties();
+		prop.load(new SendEmail().getClass().getClassLoader().getResourceAsStream("config.properties"));
 		//Get the session object  
 		Properties properties = System.getProperties();  
-		properties.setProperty("mail.smtp.host", host);  
+		properties.setProperty("mail.smtp.host", "localhost");  
 		Session session = Session.getDefaultInstance(properties);  
 		
 		//compose the message  
 		try{  
 			MimeMessage message = new MimeMessage(session);  
-			message.setFrom(new InternetAddress(from));  
-			message.addRecipient(Message.RecipientType.TO,new InternetAddress(to));  
+			message.setFrom(new InternetAddress(prop.getProperty("USER_NAME")));  
+			message.addRecipient(Message.RecipientType.TO,new InternetAddress(prop.getProperty("RECIPIENTS")));  
 			message.setSubject("Ping");  
 			message.setText("Hello, this is example of sending email  ");  
   
