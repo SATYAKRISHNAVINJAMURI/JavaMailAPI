@@ -1,30 +1,37 @@
 package org.satya.intern.java_mail_API;
 
-import org.junit.Test;
 
-import junit.framework.TestCase;
+import java.io.IOException;
+import java.util.Properties;
+import org.junit.*;
 
-public class TestReceiveMail extends TestCase {
-	@Test
-	public void testNoInternetConnection() {
-		
-	}
+import javax.mail.AuthenticationFailedException;
+import javax.mail.MessagingException;
+ public class TestReceiveMail {
+	static final Properties prop = new Properties();
+	ReadInbox read_mail = new ReadInbox();
 	
-	@Test
-	public void testAddressNotFound() {
-		
-		
+	@BeforeClass
+	public static void before() throws IOException {
+		System.out.println("before");
+		prop.load(new TestReceiveMail().getClass().getClassLoader().getResourceAsStream("config.properties"));
 	}
-	
-	@Test 
-	public void testHostServerNotReachable() {
-		
-	}
-	
-	@Test
-	public void testAuthenticationFailed() {
-		
-	}
-	
 
+	@Test
+	public void testCreateStore () throws MessagingException, IOException {
+		Assert.assertTrue(read_mail.createStore(prop.getProperty("USER_NAME"), prop.getProperty("PASSWORD")));
+	}
+    
+	@Test(expected=AuthenticationFailedException.class)
+	public void testCreateStorefailedCase () throws MessagingException, IOException {
+		read_mail.createStore(prop.getProperty("USER_NAME"), "wrong_password");
+	}
+	
+	
+	@AfterClass
+	public static void after() {
+		System.out.println("After");
+		prop.clear();
+		
+	}
 }

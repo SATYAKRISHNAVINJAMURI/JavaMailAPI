@@ -1,2 +1,3 @@
 # JavaMailAPI
-Exploring JavaMailAPI
+
+ReceiveMail.java
